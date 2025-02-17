@@ -6,8 +6,9 @@ if CLIENT then
     local zfar = 1000
     local znear = 1
     local box_size = Vector(70,70,70)
-    local box_amount = 8
+    local box_amount = 32
     
+    local box_size_max = math.max(box_size.x,box_size.y,box_size.z)
     local box_size2 = box_size / 2
     
     function calculateFrustum(position, angle, aspect, fov, znear, zfar)
@@ -90,6 +91,15 @@ if CLIENT then
         return true
     end
     
+    function isSphereInFrustum(position, radius, frustumPlanes)
+        for index, plane in pairs(frustumPlanes) do
+            local normal = plane.normal
+            local dist = normal[1] * position[1] + normal[2] * position[2] + normal[3] * position[3] - plane.eq_d
+            if dist< -radius then return false end
+        end
+        return true
+    end
+    
     
     
     
@@ -126,7 +136,9 @@ if CLIENT then
                 
                 p[1] = x * box_size.x
                 p[2] = y * box_size.y
-                local is_visible = isBoxInFrustum(offset + p, -box_size, box_size, frustrumPlanes)
+                
+                local is_visible = isSphereInFrustum(offset + p, box_size_max, frustrumPlanes) // lower precision but much faster
+                // local is_visible = isBoxInFrustum(offset + p, -box_size, box_size, frustrumPlanes)
                 
                 if is_visible then
                     render.draw3DWireframeBox(offset + p, box_ang, -box_size2, box_size2)
