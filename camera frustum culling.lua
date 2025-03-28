@@ -2,11 +2,8 @@
 --@author AstalNeker
 
 if CLIENT then
-    
-    local zfar = 1000
-    local znear = 1
     local box_size = Vector(70,70,70)
-    local box_amount = 32
+    local box_amount = 16
     
     local box_size_max = math.max(box_size.x,box_size.y,box_size.z)
     local box_size2 = box_size / 2
@@ -115,9 +112,9 @@ if CLIENT then
     local dt = 0
     hook.add("postdrawopaquerenderables", "", function()
         
-        local frustum_position = eyePos()
-        local frustrumPlanes = calculateFrustum(frustum_position, eyeAngles(), aspect, player():getFOV(), znear, zfar)
-        
+        local view_setup = render.getViewSetup()
+        local frustrumPlanes = calculateFrustum(view_setup.origin, view_setup.angles, view_setup.aspect, view_setup.fov, view_setup.znear, view_setup.zfar)
+   
         local offset = chip():getPos()
         local box_ang = Angle()
         
